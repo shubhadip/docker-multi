@@ -1,0 +1,24 @@
+sudo: true
+
+language: generic
+
+services:
+  - docker
+
+before_install:
+  - docker build -t shubhadip/docker-react-complex -f ./client/dev.Dockerfile ./client
+
+script:
+  - docker run -e CI=true shubhadip/docker-react-complex npm run test -- --coverage
+
+after_success:
+  - docker build -t shubhadip/multi-client ./client
+  - docker build -t shubhadip/multi-nginx ./nginx
+  - docker build -t shubhadip/multi-server ./server
+  - docker build -t shubhadip/multi-worker ./worker
+
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  - docker push shubhadip/multi-client
+  - docker push shubhadip/multi-nginx
+  - docker push shubhadip/multi-server
+  - docker push shubhadip/multi-worker
