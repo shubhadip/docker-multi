@@ -9,3 +9,4 @@ COPY ./ ./
 
 # start command
 CMD ["npm", "run", "start"]
+
